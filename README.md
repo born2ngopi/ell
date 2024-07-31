@@ -34,6 +34,28 @@ for client go
 $ go get github.com/born2ngopi/ell
 ```
 
+### On app startup
+```go
+func main() {
+
+    // ... some code
+
+    ell.Init("token","http://localhost:8080")
+    // watch new token
+    opt := ell.WatchOption{
+        Interval: "@hourly",
+        Driver: ell.RABBITMQ_DRIVER,
+        Username: "guest"
+        Password: "guest"
+        Host: "localhost"
+        Port: "5672"
+    }
+    ell.Watch(opt, []string{"service-b"})
+
+    // ... some code
+}
+
+```
 
 ### Simple Middleware
 ```go
