@@ -36,6 +36,11 @@ $ go get github.com/born2ngopi/ell
 
 ### On app startup
 ```go
+
+import (
+    "github.com/born2ngopi/ell/pkg/ell"
+)
+
 func main() {
 
     // ... some code
@@ -59,10 +64,18 @@ func main() {
 
 ### Simple Middleware
 ```go
+import (
+    "github.com/born2ngopi/ell/pkg/ell"
+)
+
 func Middleware(next http.Handler) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-        token := ell.GetToken("service-b")
+        token, err := ell.GetToken("service-b")
+        if err != nil {
+            w.WriteHeader(http.StatusInternalServerError)
+            return
+        }
         auth := r.Header.Get("Authorization")
         if auth != token {
             w.WriteHeader(http.StatusUnauthorized)
@@ -74,9 +87,17 @@ func Middleware(next http.Handler) http.Handler {
 
 ### simple client request
 ```go
+import (
+    "github.com/born2ngopi/ell/pkg/ell"
+)
+
 func GetUser(ctx context.Context) (User, error) {
 
-    token := ell.GetToken("service-b")
+    token, err := ell.GetToken("service-b")
+    if err != nil {
+        return User{}, err
+    }
+
     req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://service-b/user", nil)
     if err != nil {
         return User{}, err
